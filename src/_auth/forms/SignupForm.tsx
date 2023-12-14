@@ -16,9 +16,11 @@ import { Input } from "@/components/ui/input";
 
 import { useForm } from "react-hook-form";
 import { SignupValidationSchema } from "@/lib/validation";
+import Loader from "@/components/shared/Loader";
+import { Link } from "react-router-dom";
 
 function SignupForm() {
-  const isLoading = true;
+  const isLoading = false;
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
@@ -68,7 +70,7 @@ function SignupForm() {
               </FormItem>
             )}
           />
-           <FormField
+          <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
@@ -82,7 +84,7 @@ function SignupForm() {
               </FormItem>
             )}
           />
-           <FormField
+          <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
@@ -96,7 +98,7 @@ function SignupForm() {
               </FormItem>
             )}
           />
-           <FormField
+          <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
@@ -113,11 +115,22 @@ function SignupForm() {
           <Button type="submit" className="shad-button_primary">
             {isLoading ? (
               <div className="flex-center gap-2">
-                Loading...
+                <Loader />
               </div>
-            ):"Sign up"}
-            
-            </Button>
+            ) : (
+              "Sign up"
+            )}
+          </Button>
+          <p className="text-small-regular text-light-2 text-center mt-2">
+            Already have an account?
+            <Link
+              to="/sign-in"
+              className="text-primary-500
+              text-small-semibold m1-1"
+            >
+              Log in
+            </Link>
+          </p>
         </form>
       </div>
     </Form>
