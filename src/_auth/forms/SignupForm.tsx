@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useToast } from "@/components/ui/use-toast";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,10 +20,18 @@ import { useForm } from "react-hook-form";
 import { SignupValidationSchema } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
 import { Link } from "react-router-dom";
-import { createUserAccount } from "@/lib/appwrite/api";
+//import { createUserAccount } from "@/lib/appwrite/api";
+import { useCreateUserAccount } from "@/lib/react-query/QueriesAndMutations";
 
 function SignupForm() {
-  const isLoading = false;
+
+  const { toast } = useToast();
+
+  //const isLoading = false;
+
+  // mutateAsync is in this case createUserAccountMutation
+
+  const { mutateAsync: createUserAccount , isLoading: isCreatingUser} = useCreateUserAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
@@ -41,7 +51,19 @@ function SignupForm() {
     // this is done with Auth appwrite cloud platform https://cloud.appwrite.io/
     const newUser = await createUserAccount(values);
 
-    console.log(newUser);
+    //console.log(newUser);
+    if(!newUser) {
+      return  toast({
+        title: ' Sign up failed. Please Try again.', 
+      });
+    }
+    /// get toast from shacn
+    // user succussfully created now assign a session to the new user
+
+    //TanStack async react querry
+    //const session = await signInAccount()
+   
+
 
   }
 
@@ -118,7 +140,7 @@ function SignupForm() {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Loader />
               </div>
