@@ -19,19 +19,28 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { SignupValidationSchema } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 //import { createUserAccount } from "@/lib/appwrite/api";
-import { useCreateUserAccount } from "@/lib/react-query/QueriesAndMutations";
+import {
+  useCreateUserAccount,
+  useSignInAccount,
+} from "@/lib/react-query/QueriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 function SignupForm() {
-
   const { toast } = useToast();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
 
   //const isLoading = false;
 
   // mutateAsync is in this case createUserAccountMutation
 
-  const { mutateAsync: createUserAccount , isLoading: isCreatingUser} = useCreateUserAccount();
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
+    useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
+    useSignInAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
@@ -47,24 +56,45 @@ function SignupForm() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidationSchema>) {
     // create a new user
-    // creating a user is async function as the user has to created in database 
+    // creating a user is async function as the user has to created in database
     // this is done with Auth appwrite cloud platform https://cloud.appwrite.io/
-    const newUser = await createUserAccount(values);
+    try {
+      const newUser = await createUserAccount(values);
 
-    //console.log(newUser);
-    if(!newUser) {
-      return  toast({
-        title: ' Sign up failed. Please Try again.', 
+      //console.log(newUser);
+      if (!newUser) {
+        return toast({
+          title: " Sign up failed. Please Try again.",
+        });
+      }
+      /// get toast from shacn
+      // user succussfully created now assign a session to the new user
+
+      //TanStack async react querry
+      const session = await signInAccount({
+        email: values.email,
+        password: values.password,
       });
+
+      if (!session) {
+        return toast({ title: "Sign in failed. Please try again." });
+      }
+
+      // store session now in React Context AuthContext.ts
+
+      const isLoggedIn = await checkAuthUser();
+
+      if (isLoggedIn) {
+        form.reset();
+
+        navigate("/"); // navigate to home page
+      } else {
+        toast({ title: "Sign up failed. Please try again." });
+        return;
+      }
+    } catch (error) {
+      console.log({error});
     }
-    /// get toast from shacn
-    // user succussfully created now assign a session to the new user
-
-    //TanStack async react querry
-    //const session = await signInAccount()
-   
-
-
   }
 
   return (
@@ -140,7 +170,7 @@ function SignupForm() {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Loader />
               </div>

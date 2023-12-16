@@ -10,8 +10,7 @@ export async function createUserAccount(user: INewUser) {
             user.email,
             user.password,
             user.name
-
-        )
+        );
 
         if (!newAccount) throw Error;
 
@@ -29,7 +28,7 @@ export async function createUserAccount(user: INewUser) {
 
     } catch (error) {
         console.log(error);
-        return error;
+        return ;
 
     }
 }
@@ -68,7 +67,7 @@ export async function signInAccount(user: {
         // create new email session
         const session = await account.createEmailSession(
             user.email, user.password
-        )
+        );
 
         return session;
 
@@ -77,6 +76,17 @@ export async function signInAccount(user: {
     }
     
 }
+
+// ============================== GET ACCOUNT
+export async function getAccount() {
+    try {
+      const currentAccount = await account.get();
+  
+      return currentAccount;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 export async function getCurrentUser(){
     try {

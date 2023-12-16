@@ -1,3 +1,5 @@
+import {React} from 'react';
+
 import { getCurrentUser } from '@/lib/appwrite/api';
 import { IContextType, IUser } from '@/types';
 import {
@@ -30,7 +32,7 @@ const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
 
 
-function AuthProvider = ({ children }: { children: React.ReactNode }) => {
+function AuthProvider({children} : { children: React.ReactNode })  {
   const [user, setUser] = useState<IUser>( INITIAL_USER);
   const [isLoading, setIsloading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -78,9 +80,9 @@ function AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // empty dependency array in useEffect means that it will be called only on reload
 
   useEffect(() => {
+  // localStorage.getItem('cookieFallback') === null
     if(
-        localStorage.getItem('cookieFallback') === '[]' ||
-        localStorage.getItem('cookieFallback') === null
+        localStorage.getItem('cookieFallback') === '[]' 
       ) navigate('/sign-in');
 
       checkAuthUser();
@@ -98,6 +100,7 @@ function AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider value={value} >
+        {children}
     </AuthContext.Provider>
   )
 }
