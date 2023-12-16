@@ -1,4 +1,4 @@
-import {React} from 'react';
+//import {React} from 'react';
 
 import { getCurrentUser } from '@/lib/appwrite/api';
 import { IContextType, IUser } from '@/types';
@@ -80,9 +80,10 @@ function AuthProvider({children} : { children: React.ReactNode })  {
   // empty dependency array in useEffect means that it will be called only on reload
 
   useEffect(() => {
-  // localStorage.getItem('cookieFallback') === null
+  // 
     if(
-        localStorage.getItem('cookieFallback') === '[]' 
+        localStorage.getItem('cookieFallback') === '[]' ||
+        localStorage.getItem('cookieFallback') === null
       ) navigate('/sign-in');
 
       checkAuthUser();

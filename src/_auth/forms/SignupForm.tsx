@@ -89,8 +89,8 @@ function SignupForm() {
 
         navigate("/"); // navigate to home page
       } else {
-        toast({ title: "Sign up failed. Please try again." });
-        return;
+       
+        return  toast({ title: "Sign up failed. Please try again." });
       }
     } catch (error) {
       console.log({error});
