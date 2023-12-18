@@ -77,6 +77,20 @@ export async function signInAccount(user: {
     
 }
 
+export async function signOutAccount() {
+
+    try {
+        // create new email session
+        const session = await account.deleteSession("current");
+
+        return session;
+
+    } catch (error) {
+        console.log(error)
+    }
+    
+}
+
 // ============================== GET ACCOUNT
 export async function getAccount() {
     try {
