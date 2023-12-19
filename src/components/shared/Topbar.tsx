@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { useSignOutAccount } from "@/lib/react-query/QueriesAndMutations";
 import { useEffect } from "react";
 import { useUserContext } from "@/context/AuthContext";
-
+// Topbar only appears on mobile screen
 function Topbar() {
   const { mutate: signOut, isSuccess } = useSignOutAccount();
   const navigate = useNavigate();
