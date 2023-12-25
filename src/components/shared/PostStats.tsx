@@ -9,6 +9,7 @@ import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite";
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import { Button } from "../ui/button";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -49,9 +50,9 @@ function PostStats({ post, userId }: PostStatsProps) {
     let newLikes = [...likes]; // spread all the previous likes
 
     const hasLiked = newLikes.includes(userId); // if the current likes includes the current userid
-    console.log(hasLiked)
+    /*console.log(hasLiked)
     console.log(userId)
-    console.log(currentUser?.$id)
+    console.log(currentUser?.$id)*/
 
     if (hasLiked) {
       newLikes = newLikes.filter((id) => id !== userId);
@@ -88,13 +89,17 @@ function PostStats({ post, userId }: PostStatsProps) {
     
 
   };
-
+  
+  console.log(likes);
+    console.log(userId);
+    console.log(likes.includes(userId))
   return (
     <div className="flex justify-between items-center z-20">
       <div className="flex gap-2 mr-5">
+        
         <img
           src={
-            checkIsLiked(likes, userId)?
+            checkIsLiked(likes, userId) ?
               "/assets/icons/liked.svg"
               : "/assets/icons/like.svg"
             }
@@ -108,17 +113,21 @@ function PostStats({ post, userId }: PostStatsProps) {
       </div>
 
       <div className="flex gap-2">
-        <img
-          src="/assets/icons/share.svg"
-          alt="share"
-          width={20}
-          height={20}
+       
+         <Button
           onClick={() => {}}
-          className="cursor-pointer"
-        />
-      </div>
+          variant="ghost"
+          className="shad-button_ghost">
+          <img
+            src={"/assets/icons/share.svg"}
+            alt="share"
+            width={20}
+            height={20}
+          />
+          
+        </Button>
+     
 
-      <div className="flex gap-2">
         { isSavingPost || isDeletingSaved ? <Loader /> :
         <img
           src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
