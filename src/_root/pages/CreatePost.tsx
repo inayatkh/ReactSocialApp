@@ -19,7 +19,7 @@ function CreatePost() {
 
         </div>
 
-        <PostForm />
+        <PostForm action="Create"/>
 
       </div>
 

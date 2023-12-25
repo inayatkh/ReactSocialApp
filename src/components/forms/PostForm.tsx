@@ -18,7 +18,7 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
 import { PostFormValidationSchema } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost } from "@/lib/react-query/QueriesAndMutations";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/QueriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -26,15 +26,23 @@ import { useNavigate } from "react-router-dom";
 
 type PostFormProps = {
     post?: Models.Document;
+    action: 'Create' | 'Update';
 
 }
 /* 
     A  resuable shadcn React Hook Form  component 
 */
-function PostForm({ post }: PostFormProps) {
+function PostForm({ post, action }: PostFormProps) {
 
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
   useCreatePost();
+
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+  useUpdatePost();
+
+
+
+
   const { user } = useUserContext();
 
   const { toast } = useToast();
@@ -57,6 +65,30 @@ function PostForm({ post }: PostFormProps) {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof PostFormValidationSchema>) {
+
+    if(post && action === 'Update'){
+      const updatedPost = await updatePost({
+        ...values,
+        postId: post.$id,
+        imageId: post.imageId,
+        imageUrl: post.imageUrl,
+
+      });
+
+      if (!updatedPost){
+        toast({
+             title: 'Please try again',
+         });
+ 
+         return ;
+     }
+      
+     return navigate(`/posts/${post.$id}`);
+
+
+    }
+
+
     const newPost = await  createPost({
         ...values,
         userId: user.id,
@@ -159,8 +191,10 @@ function PostForm({ post }: PostFormProps) {
             <Button 
                 type="submit"
                 className="shad-button_primary whitespace-nowrap"
+                disabled={isLoadingCreate || isLoadingUpdate}
                 >
-                    Submit
+                  {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+                  {action} Post
                 </Button>
 
             
