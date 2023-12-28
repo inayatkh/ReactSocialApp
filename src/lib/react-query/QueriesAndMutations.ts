@@ -22,9 +22,14 @@ import {
   updatePost,
   deletePost,
   getUserPosts,
+  updateUser,
+  getInfinitePosts,
+  searchPosts,
+  getUserById,
+ 
 
 } from '../appwrite/api'
-import { INewUser, INewPost, IUpdatePost } from '@/types'
+import { INewUser, INewPost, IUpdatePost, IUpdateUser } from '@/types'
 
 export const useCreateUserAccount = () => {
 
@@ -86,15 +91,20 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ postId, likesArray }: { postId: string; likesArray: string[] }) =>
-      likePost(postId, likesArray),
+    mutationFn: ({ 
+      postId,
+      likesArray,
+     }: { 
+      postId: string;
+      likesArray: string[]
+     }) =>  likePost(postId, likesArray),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
       })
 
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS, data?.$id]
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       })
 
       queryClient.invalidateQueries({
@@ -208,6 +218,58 @@ export const useGetUserPosts = (userId?: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
     queryFn: () => getUserPosts(userId),
+    enabled: !!userId,
+  });
+};
+
+// ============================================================
+// POST QUERIES
+// ============================================================
+
+export const useGetPosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+    queryFn: getInfinitePosts ,
+    getNextPageParam: (lastPage) => {
+      // If there's no data, there are no more pages.
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last document as the cursor.
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
+export const useSearchPosts = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+    queryFn: () => searchPosts(searchTerm),
+    enabled: !!searchTerm,
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (user: IUpdateUser) => updateUser(user),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      });
+    },
+  });
+};
+
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+    queryFn: () => getUserById(userId),
     enabled: !!userId,
   });
 };

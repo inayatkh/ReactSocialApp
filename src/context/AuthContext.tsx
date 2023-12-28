@@ -1,78 +1,63 @@
 //import {React} from 'react';
 
-import { getCurrentUser } from '@/lib/appwrite/api';
-import { IContextType, IUser } from '@/types';
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState
-} from 'react'
-import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from "@/lib/appwrite/api";
+import { IContextType, IUser } from "@/types";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const INITIAL_USER = {
-    id: '',
-    name: '',
-    username: '',
-    email: '',
-    imageUrl: '',
-    bio: '',
-}
+  id: "",
+  name: "",
+  username: "",
+  email: "",
+  imageUrl: "",
+  bio: "",
+};
 
 const INITIAL_STATE = {
-    user: INITIAL_USER,
-    isLoading: false,
-    isAuthenticated: false,
-    setUser: () => {},
-    setIsAuthenticated: () => {},
-    checkAuthUser: async () => false as boolean,
-}
+  user: INITIAL_USER,
+  isLoading: false,
+  isAuthenticated: false,
+  setUser: () => {},
+  setIsAuthenticated: () => {},
+  checkAuthUser: async () => false as boolean,
+};
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
-
-
-function AuthProvider({children} : { children: React.ReactNode })  {
-  const [user, setUser] = useState<IUser>( INITIAL_USER);
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isLoading, setIsloading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigate = useNavigate();
 
+  const checkAuthUser = async () => {
+    try {
+      const currentAccount = await getCurrentUser();
 
-  const checkAuthUser =async () => {
-    try{
+      if (currentAccount) {
+        setUser({
+          id: currentAccount.$id,
+          name: currentAccount.name,
+          username: currentAccount.username,
+          email: currentAccount.email,
+          imageUrl: currentAccount.imageUrl,
+          bio: currentAccount.bio,
+        });
 
-        const currentAccount = await getCurrentUser();
+        setIsAuthenticated(true);
 
-        if( currentAccount) {
-            setUser({
-                id: currentAccount.$id,
-                name: currentAccount.name,
-                username: currentAccount.username,
-                email: currentAccount.email,
-                imageUrl: currentAccount.imageUrl,
-                bio: currentAccount.bio,
-            })
+        return true;
+      }
 
-            setIsAuthenticated(true);
-
-            return true;
-
-        }
-
-        return false;
-
-    } catch (error){
-
-        console.log(error)
-        return false;
-
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
     } finally {
-        setIsloading (false);
+      setIsloading(false);
     }
-    
-    
   };
 
   // checkAuthUser should be  called when every reloading a page
@@ -80,15 +65,15 @@ function AuthProvider({children} : { children: React.ReactNode })  {
   // empty dependency array in useEffect means that it will be called only on reload
 
   useEffect(() => {
-  // 
-    if(
-        localStorage.getItem('cookieFallback') === '[]' ||
-        localStorage.getItem('cookieFallback') === null
-      ) navigate('/sign-in');
+    //
+    if (
+      localStorage.getItem("cookieFallback") === "[]" ||
+      localStorage.getItem("cookieFallback") === null
+    )
+      navigate("/sign-in");
 
-      checkAuthUser();
-    
-  },[]);
+    checkAuthUser();
+  }, []);
 
   const value = {
     user,
@@ -96,14 +81,10 @@ function AuthProvider({children} : { children: React.ReactNode })  {
     isAuthenticated,
     setUser,
     setIsAuthenticated,
-    checkAuthUser
-  }
+    checkAuthUser,
+  };
 
-  return (
-    <AuthContext.Provider value={value} >
-        {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;

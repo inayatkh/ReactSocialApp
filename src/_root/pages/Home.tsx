@@ -6,6 +6,8 @@ import { Models } from "appwrite";
 import Loader from "@/components/shared/Loader";
 import PostCard from "@/components/shared/PostCard";
 import { useGetRecentPosts, useGetUsers } from "@/lib/react-query/QueriesAndMutations";
+import UserCard from "@/components/shared/UserCard";
+import { useUserContext } from "@/context/AuthContext";
 
 const Home = () => {
   // const { toast } = useToast();
@@ -22,6 +24,8 @@ const Home = () => {
     isLoading: isUserLoading,
     isError: isErrorCreators,
   } = useGetUsers(10);
+
+  
 
   if (isErrorPosts || isErrorCreators) {
     return (
@@ -47,7 +51,7 @@ const Home = () => {
             <ul className="flex flex-col flex-1 gap-9 w-full ">
               {posts?.documents.map((post: Models.Document) => (
                 <li key={post.$id} className="flex justify-center w-full">
-                  <PostCard post={post} key={post.caption}/>
+                  {<PostCard post={post}  />}
                 </li>
               ))}
             </ul>
@@ -60,7 +64,12 @@ const Home = () => {
         {isUserLoading && !creators ? (
           <Loader />
         ) : (
-          <ul >
+          <ul className="grid 2xl:grid-cols-2 gap-6">
+            {creators?.documents.map((creator) => (
+              <li key={creator?.$id}>
+                <UserCard user={creator} />
+              </li>
+            ))}
           </ul>
         )}
       </div>

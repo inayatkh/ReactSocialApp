@@ -10,6 +10,7 @@ import { Models } from "appwrite";
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
 import { Button } from "../ui/button";
+import { useLocation } from "react-router-dom";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -17,11 +18,19 @@ type PostStatsProps = {
 };
 
 function PostStats({ post, userId }: PostStatsProps) {
-  const likesList = post.likes.map((user: Models.Document) => {
-    user.$id;
-  });
 
-  const [likes, setLikes] = useState(likesList);
+  const location = useLocation();
+  // remove undefined likes items in post if any
+  post.likes = post.likes.filter( (item: any) => !!item)
+  
+  const likesList = post.likes.map((user: Models.Document) => user.$id);
+
+
+
+  //console.log("PostStats: userId",userId)
+  //console.log("PostStats: likesList",likesList)
+
+  const [likes, setLikes] = useState<string[]>(likesList);
   const [isSaved, setisSaved] = useState(false);
 
   const { mutate: likePost } = useLikePost();
@@ -30,7 +39,7 @@ function PostStats({ post, userId }: PostStatsProps) {
 
   const { data: currentUser } = useGetCurrentUser();
 
-  /*
+  
   const savedPostRecord = currentUser?.save.find(
     (record: Models.Document) => record.post.$id === post.$id
   );
@@ -40,32 +49,46 @@ function PostStats({ post, userId }: PostStatsProps) {
     setisSaved( !!savedPostRecord)
   },[currentUser]);
 
-  */
+  
 
-  const handleLikePost = (e: React.MouseEvent) => {
+  const handleLikePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation(); // allow to click only this and dont propagate
 
     
+    //console.log("LIKES CLICK")
+    //let newLikes = [...likes]; // spread all the previous likes
+    let likesArray = [...likes];
 
-    let newLikes = [...likes]; // spread all the previous likes
+    // filter out undefined if any
+    //likesArray=likesArray.filter(item => !!item);
 
-    const hasLiked = newLikes.includes(userId); // if the current likes includes the current userid
-    /*console.log(hasLiked)
-    console.log(userId)
+    //const hasLiked = newLikes.includes(userId); // if the current likes includes the current userid
+    const hasLiked = likesArray.includes(userId);
+    //console.log('hasLike', userId, likes)
+    /*console.log(userId)
     console.log(currentUser?.$id)*/
 
     if (hasLiked) {
-      newLikes = newLikes.filter((id) => id !== userId);
+      //newLikes = newLikes.filter((id) => id !== userId);
+      likesArray = likesArray.filter((Id) => Id !== userId);
     } else {
-      newLikes.push(userId);
+      //newLikes.push(userId);
+      likesArray.push(userId);
     }
 
-    setLikes(newLikes);
+    //setLikes(newLikes);
+    setLikes(likesArray);
 
-    likePost({ postId: post.$id, likesArray: newLikes });
+    //likePost({ postId: post.$id, likesArray: newLikes });
+ 
+    likePost({ postId: post.$id, likesArray});
+     
+  
+
+   // console.log("LIKES CLICK EXIT")
   };
 
-  const handleSavePost = (e: React.MouseEvent) => {
+  const handleSavePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation(); // allow to click only this and dont propagate
 
     const savedPostRecord = currentUser?.save.find(
@@ -74,39 +97,44 @@ function PostStats({ post, userId }: PostStatsProps) {
 
     if (savedPostRecord) { // we have already saved it , therefore we want to remove from save list
         setisSaved(false);
-        deleteSavedPost(savedPostRecord.$id);
+        return deleteSavedPost(savedPostRecord.$id);
 
        
 
     } else {
 
-        savePost({ postId: post.$id, userId});
-    
-    
+        //savePost({ postId: post.$id, userId});
+        savePost({ userId: userId, postId: post.$id });
         setisSaved(true);
 
     }
     
 
   };
-  
+
+  const containerStyles = location.pathname.startsWith("/profile")
+    ? "w-full"
+    : "";
+  /*
   console.log(likes);
-    console.log(userId);
-    console.log(likes.includes(userId))
+  console.log(userId);
+  console.log(likes.includes(userId))
+  */
+ //console.log( {likes, userId})
   return (
-    <div className="flex justify-between items-center z-20">
+    <div className={`flex justify-between items-center z-20 ${containerStyles}`}>
       <div className="flex gap-2 mr-5">
         
         <img
-          src={
-            checkIsLiked(likes, userId) ?
-              "/assets/icons/liked.svg"
+          src={`${
+            checkIsLiked(likes, userId)
+              ? "/assets/icons/liked.svg"
               : "/assets/icons/like.svg"
-            }
+          }`}
           alt="like"
           width={20}
           height={20}
-          onClick={handleLikePost}
+          onClick={(e) => handleLikePost(e)}
           className="cursor-pointer"
         />
         <p className="small-medium lg:base-medium">{likes.length}</p>
@@ -135,7 +163,7 @@ function PostStats({ post, userId }: PostStatsProps) {
           alt="save"
           width={20}
           height={20}
-          onClick={handleSavePost}
+          onClick={(e) => handleSavePost(e)}
           className="cursor-pointer"
         />
         }
