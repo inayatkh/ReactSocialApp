@@ -280,6 +280,37 @@ export async function getUsers(limit?: number) {
     console.log(error);
   }
 }
+
+// ============================== GET USERS
+export async function getPostLikedUsers(userIds: string | string[]) {
+  //const queries: any[] = [Query.orderDesc("$createdAt")];
+  
+  
+  if (typeof userIds === "string") {
+    userIds = [userIds];
+  } else {
+    userIds = userIds;
+  }
+
+  //console.log(userIds)
+
+  try {
+    const users = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [ Query.orderDesc("$createdAt"),
+        Query.equal('$id', userIds)
+
+      ]
+    );
+
+    if (!users) throw Error;
+
+    return users;
+  } catch (error) {
+    console.log(error);
+  }
+}
 // ============================== like Post 
 // this post returns the ids of the users that have liked the post
 export async function likePost(postId: string, likesArray: string[]) {

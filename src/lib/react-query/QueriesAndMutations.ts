@@ -26,6 +26,7 @@ import {
   getInfinitePosts,
   searchPosts,
   getUserById,
+  getPostLikedUsers,
  
 
 } from '../appwrite/api'
@@ -87,6 +88,23 @@ export const useGetUsers = (limit?: number) => {
   });
 };
 
+export const useGetPostLikedUsers =(userIds: string | string[]) =>{
+  /// to avoid the following error
+  /*
+    argument of type 'string[] | undefined' is not assignable to parameter of type 'string[]'.
+  */
+  if (typeof userIds === "string") {
+    userIds = [userIds];
+  } else {
+    userIds = userIds;
+  }
+  //console.log(userIds)
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_LIKE_USERS],
+    queryFn: () => getPostLikedUsers(userIds),
+  });
+}
 export const useLikePost = () => {
   const queryClient = useQueryClient();
 

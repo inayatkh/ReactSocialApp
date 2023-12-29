@@ -277,4 +277,10 @@
   .shad-button_ghost {
     @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
   }
+
+  /* Likes Short List */
+  .posts-likes-shortlist-container {
+    @apply  relative top-5 -left-20 flex flex-col bg-slate-600 text-light-1 tiny-medium rounded-md items-center overflow-scroll z-10 py-2 px-2 custom-scrollbar;
+  }
+  
 }

@@ -11,6 +11,10 @@ import { useEffect, useState } from "react";
 import Loader from "./Loader";
 import { Button } from "../ui/button";
 import { useLocation } from "react-router-dom";
+import ShowPostLikesList from "./ShowPostLikesList";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { ScrollArea } from "../ui/scroll-area";
+
 
 type PostStatsProps = {
   post: Models.Document;
@@ -49,11 +53,25 @@ function PostStats({ post, userId }: PostStatsProps) {
     setisSaved( !!savedPostRecord)
   },[currentUser]);
 
-  
+/*
+   /// set for likes hover
+   const [isLikedHovered, setIsLikedHovered] = useState(false);
+
+   const handleLikeMouseEnter = (e: React.MouseEvent<HTMLParagraphElement, MouseEvent>) => {
+    e.stopPropagation();
+     setIsLikedHovered(true);
+   };
+
+   const handleLikeMouseLeave = (e: React.MouseEvent<HTMLParagraphElement, MouseEvent>) => {
+    e.stopPropagation();
+     setIsLikedHovered(false);
+   };
+  */
 
   const handleLikePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation(); // allow to click only this and dont propagate
 
+    
     
     //console.log("LIKES CLICK")
     //let newLikes = [...likes]; // spread all the previous likes
@@ -136,8 +154,32 @@ function PostStats({ post, userId }: PostStatsProps) {
           height={20}
           onClick={(e) => handleLikePost(e)}
           className="cursor-pointer"
+          
         />
-        <p className="small-medium lg:base-medium">{likes.length}</p>
+        {/* 
+        <p 
+          className="small-medium lg:base-medium  cursor-pointer"
+          onMouseEnter={(e) => handleLikeMouseEnter(e)}
+          onMouseLeave={(e) => handleLikeMouseLeave(e)}
+        >{likes.length}
+        </p>
+        {isLikedHovered && <ShowPostLikesList likes={likes} />}
+        */}
+        <Popover >
+          <PopoverTrigger asChild>
+              <Button 
+                variant="link" 
+                className="px-0 small-medium lg:base-medium  cursor-pointer"
+              >{likes.length}
+            </Button>
+          </PopoverTrigger>         
+          <PopoverContent className="w-50  px-0 py-0">
+              <ShowPostLikesList likes={likes} />
+          </PopoverContent>       
+        </Popover>
+
+        
+        
       </div>
 
       <div className="flex gap-2">

@@ -5,6 +5,7 @@ export enum QUERY_KEYS {
     // USER KEYS
     GET_CURRENT_USER = "getCurrentUser",
     GET_USERS = "getUsers",
+    GET_POST_LIKE_USERS = "getPostLikedUsers",
     GET_USER_BY_ID = "getUserById",
   
     // POST KEYS
