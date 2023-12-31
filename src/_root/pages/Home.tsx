@@ -7,7 +7,6 @@ import Loader from "@/components/shared/Loader";
 import PostCard from "@/components/shared/PostCard";
 import { useGetRecentPosts, useGetUsers } from "@/lib/react-query/QueriesAndMutations";
 import UserCard from "@/components/shared/UserCard";
-import { useUserContext } from "@/context/AuthContext";
 
 const Home = () => {
   // const { toast } = useToast();

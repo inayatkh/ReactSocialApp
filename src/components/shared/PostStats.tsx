@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import ShowPostLikesList from "./ShowPostLikesList";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ScrollArea } from "../ui/scroll-area";
+import SharePostCard from "./SharePostCard";
 
 
 type PostStatsProps = {
@@ -140,6 +141,7 @@ function PostStats({ post, userId }: PostStatsProps) {
   */
  //console.log( {likes, userId})
   return (
+   
     <div className={`flex justify-between items-center z-20 ${containerStyles}`}>
       <div className="flex gap-2 mr-5">
         
@@ -183,21 +185,29 @@ function PostStats({ post, userId }: PostStatsProps) {
       </div>
 
       <div className="flex gap-2">
-       
-         <Button
-          onClick={() => {}}
-          variant="ghost"
-          className="shad-button_ghost">
-          <img
-            src={"/assets/icons/share.svg"}
-            alt="share"
-            width={20}
-            height={20}
-          />
-          
-        </Button>
-     
+        {/* Sharing a post button and popup SharePostCard */}
+          <Popover >
+            <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="shad-button_ghost"
+                >
+                <img
+                  src={"/assets/icons/share.svg"}
+                  alt="share"
+                  width={20}
+                  height={20}
+                />
+              </Button>
+            </PopoverTrigger>         
+            <PopoverContent className="flex flex-1 w-72 md:w-50  px-0 py-0 border-0">
+                <SharePostCard shareUrl={`/posts/${post.$id}`} />
+            </PopoverContent>       
+          </Popover>
 
+          
+     
+        {/* The following code is added for saving a post */}
         { isSavingPost || isDeletingSaved ? <Loader /> :
         <img
           src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}

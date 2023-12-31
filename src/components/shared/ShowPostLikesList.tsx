@@ -4,8 +4,11 @@ import { useGetPostLikedUsers } from "@/lib/react-query/QueriesAndMutations";
 
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
+
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
+
+//import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 type UserIdList = {
   likes: string[];
@@ -33,21 +36,21 @@ const ShowPostLikesList = (likes: UserIdList) => {
 
    justify-between items-center z-20
    */
-  
+   //const TAGS = Array.from({ length: 50 }).map((_, i, a) => `v1.2.0-beta.${a.length - i}`);
   return (
     
-      <div className="flex flex-col w-full h-40 px-0 py-0 bg-slate-500 text-dark-4 tiny-medium">
+      <div className="flex flex-col w-full h-40 px-0 py-0 bg-gray-800 text-light-1 tiny-medium">
         {isPending ? (
           <Loader />
         ) : (
-          <ScrollArea className="rounded-md border overflow-y-auto">
+          <ScrollArea className="scrollArea-scrollbar rounded-md border overflow-y-auto">
             <div className="p-4">
               <h4 className="h3-small-regular">Likes: {likeUsers?.documents.length}</h4>
-              <Separator className="my-2" />
+              <Separator className="separator-root  mt-2 " />
               
               {likeUsers?.documents.map((likeUser) => {
                 return (
-                  <div className="flex flex-col w-full " key={likeUser.$id}>
+                  <div className="flex flex-col w-full mt-1" key={likeUser.$id}>
                     <Link to={`/profile/${likeUser.$id}`}>
                       <img
                         src={
@@ -60,7 +63,7 @@ const ShowPostLikesList = (likes: UserIdList) => {
                         width={20}
                         height={20}
                       />
-                      <p className="ml-6 mt-2 hover:text-blue-900">{likeUser?.name}</p>
+                      <p className="ml-8 mt-2 hover:text-blue-900">{likeUser?.name}</p>
                     </Link>
                     <Separator className="my-1" />
                   </div>
@@ -72,6 +75,8 @@ const ShowPostLikesList = (likes: UserIdList) => {
      
           
           </ScrollArea>
+
+         
         )}
       </div>
 

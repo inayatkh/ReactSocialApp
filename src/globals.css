@@ -282,5 +282,41 @@
   .posts-likes-shortlist-container {
     @apply  relative top-5 -left-20 flex flex-col bg-slate-600 text-light-1 tiny-medium rounded-md items-center overflow-scroll z-10 py-2 px-2 custom-scrollbar;
   }
+
+  .separator-root {
+    background-color: #3f3f46;
+  }
+  .separator-root[data-orientation='horizontal'] {
+    height: 1px;
+    width: 100%;
+  }
+  .separator-root[data-orientation='vertical'] {
+    height: 100%;
+    width: 1px;
+  }
+  
+  .text {
+    color: white;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .flex-social-grid {
+	  display: flex;
+	}
+
+  .flex-social-col {
+	  flex: 1;
+	}
+  
+  .shadcn-button_close {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  
+  
+  
+
   
 }

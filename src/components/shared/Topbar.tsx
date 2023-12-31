@@ -23,10 +23,10 @@ function Topbar() {
       <div className="flex-between py-4 px-5">
         <Link to="/" className="flex gap-3 items-center">
           <img
-            src="/assets/images/logo.svg"
+            src="/assets/images/logo-no-background.svg"
             alt="logo"
             width={130}
-            height={325}
+            height={350}
           />
         </Link>
         <div className="flex gap-4">
