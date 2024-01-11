@@ -3,6 +3,7 @@ import { ID, Models } from "appwrite"
 import { Link } from "react-router-dom";
 import { multiFormatDateString } from "@/lib/utils";
 import PostStats from "./PostStats";
+import ImagesLightBox from "./ImagesLightBox";
 
 type PostCardProps = {
   post: Models.Document;
@@ -10,6 +11,8 @@ type PostCardProps = {
 };
 
 function PostCard({ post }: PostCardProps) {
+  console.log('PostCard')
+  console.log(post)
   const { user } = useUserContext();
 
   if(!user.id) return;
@@ -71,11 +74,14 @@ function PostCard({ post }: PostCardProps) {
          
           </ul>
         </div>
-        <img 
+        {/*<img 
           src={post.imageUrl || '/assets/icons/profile-placeholder.svg'}
           className="post-card_img"
           alt="post image"
-        />
+              />*/}
+              <ImagesLightBox 
+                  imageUrls={post.imageUrls}
+              />
       </Link>
       <PostStats post={post} userId={user.id} />
     </div>

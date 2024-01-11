@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { useUserContext } from "@/context/AuthContext";
 import PostStats from "./PostStats";
+import ImagesLightBox from "./ImagesLightBox";
 
 type GridPostListProps = {
   posts: Models.Document[];
@@ -23,11 +24,15 @@ const GridPostList = ({
       {posts.map((post) => (
         <li key={post.$id} className="relative min-w-80 h-80">
           <Link to={`/posts/${post.$id}`} className="grid-post_link">
-            <img
-              src={post.imageUrl}
+           {/*  <img
+              src={post.imageUrls[0]}
               alt="post"
               className="h-full w-full object-cover"
             />
+            */}
+             <ImagesLightBox 
+                  imageUrls={post.imageUrls}
+              />
           </Link>
 
           <div className="grid-post_user">

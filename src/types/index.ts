@@ -1,3 +1,5 @@
+import { EditFile } from "@/lib/utils";
+
 export type IContextType = {
   user: IUser;
   isLoading: boolean;
@@ -25,7 +27,8 @@ export type INavLink = {
   export type INewPost = {
     userId: string;
     caption: string;
-    file: File[];
+    //files: File[];
+    filesMap:  Map<string, EditFile>;
     location?: string;
     tags?: string;
   };
@@ -33,9 +36,10 @@ export type INavLink = {
   export type IUpdatePost = {
     postId: string;
     caption: string;
-    imageId: string;
-    imageUrl: URL;
-    file: File[];
+    //imageIds: string[]; // a post may contain more than one image
+    //imageUrls: URL[];
+    //files: File[];
+    filesMap:  Map<string, EditFile>;
     location?: string;
     tags?: string;
   };

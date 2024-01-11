@@ -1,6 +1,25 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+// contain ether local file and local url blob, remote file url and remote file id
+export class EditFile{
+  isLocal : boolean;
+  localFile: File;
+  localFileURL: string;
+  remoteFileUrl: string;
+  remoteFileId: string;
+
+  constructor() {
+    this.isLocal =false;
+    this.localFile= <File>{};
+    this.localFileURL ='';
+    this.remoteFileId ='';
+    this.remoteFileUrl ='';
+
+
+  }
+
+}
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

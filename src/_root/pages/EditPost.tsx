@@ -12,7 +12,7 @@ function EditPost() {
   const { id } = useParams();
   // this id is the postid will be obatined from link to route opption /update-post/id=...
 
-  console.log(id);
+  //console.log(id);
 
   const {data: post, isPending: isLoadingEdit} = useGetPostById( id || "");
 
@@ -22,7 +22,9 @@ function EditPost() {
         <Loader />
       </div>
     );
-
+  
+    console.log('Edit Post')
+  console.log(post)
 
   return (
     <div className='flex flex-1'>
