@@ -174,9 +174,12 @@ export function getFilePreview(fileId: string) {
 }
 // ============================== DELETE FILE
 // delete the media file from the appwrite storage
-export async function deleteFile(fileId: string) {
+export function deleteFile(fileId: string) {
   try {
-    await storage.deleteFile(appwriteConfig.storageId, fileId);
+    console.log('deleteFile')
+    console.log(fileId)
+
+    storage.deleteFile(appwriteConfig.storageId, fileId);
 
     return { status: "ok" };
   } catch (error) {
@@ -193,13 +196,6 @@ export async function createPost(post: INewPost) {
     //(async ()=>{
     let fileUrls: Array<string>=[];
     let uploadedFilesIds: Array<string> =[];
-    //fileUrls.length=0;
-    //uploadedFilesIds.length=0;
-    
-    
-
-
-    const numFiles= post.filesMap.size;
     
     
     const promises = Array.from(post.filesMap).map(async ([key, file]) => {
@@ -207,9 +203,7 @@ export async function createPost(post: INewPost) {
 
       if (file.isLocal) { // a local file is added
         // Upload file to appwrite storage
-
-
-        const uploadedFile = await uploadFile(file.localFile);
+       const uploadedFile = await uploadFile(file.localFile);
           
         return uploadedFile;
       }
@@ -218,25 +212,18 @@ export async function createPost(post: INewPost) {
 
     const fileIds = await Promise.all(promises);
 
-
-    //console.log(fileIds)
-    
-    fileIds.forEach((value)=>{
-      if(value?.$id){
-        console.log(value.$id)
-       
-        
-        const fileUrl=getFilePreview(value.$id);
+    fileIds.forEach((file)=>{
+      if(file?.$id){
+              
+        const fileUrl=getFilePreview(file.$id);
         
         if (!fileUrl) {
           // if something goes wrong or corrupted then delete the media file from the storage
-          deleteFile(value.$id);
+          deleteFile(file.$id);
           throw Error;
         }
-        uploadedFilesIds.push(value.$id);
+        uploadedFilesIds.push(file.$id);
         fileUrls.push(fileUrl.toString())
-
-
 
       }
     })
@@ -250,24 +237,14 @@ export async function createPost(post: INewPost) {
         fileUrls.push(file.remoteFileUrl);
         uploadedFilesIds.push(file.remoteFileId);
 
-
-        
       }
 
     });
 
-    //console.log('promises');
-    //console.log(fileUrls);
-    //console.log(uploadedFilesIds);
- 
-
     // Convert tags into array
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
-    
-    tags.push('sdfasd')
-
-       // Create post or now save the post to apprwrite database collection post
+          // Create post or now save the post to apprwrite database collection post
     const newPost = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
@@ -282,14 +259,13 @@ export async function createPost(post: INewPost) {
       }
     );
 
-
-
     if (!newPost) {
-      for (let index = 0; index < uploadedFilesIds.length; index++) {
-        await deleteFile(uploadedFilesIds[index]);
-        throw Error;
-
-      }
+      fileIds.forEach((file)=>{
+        if(file?.$id){
+          deleteFile(file.$id);
+         
+        }
+      })
       //await deleteFile(uploadedFile.$id);
       //throw Error;
     }
@@ -484,84 +460,92 @@ export async function updatePost(post: IUpdatePost) {
   //const hasFileToUpdate = post.files.length > 0;
   const hasFileToUpdate = post.filesMap.size > 0;
 
-
   try {
+    // Upload file to appwrite storage
+    //console.log('createPost')
+    //console.log(post)
+    //(async ()=>{
+    let fileUrls: Array<string>=[];
+    let uploadedFilesIds: Array<string> =[];
+    
+    
+    const promises = Array.from(post.filesMap).map(async ([key, file]) => {
+      //for( let [key, file] of Object.entries(post.filesMap)){
 
-    let fileUrls: URL[] = [];
-    let uploadedFilesIds: string[] = [];
+      if (file.isLocal) { // a local file is added
+        // Upload file to appwrite storage
+       const uploadedFile = await uploadFile(file.localFile);
+          
+        return uploadedFile;
+      }
 
-    if (hasFileToUpdate) {
+    });
 
-      post.filesMap.forEach(async (file: EditFile, key: string) => {
-        if (file.isLocal) { // a local file is added
-          // Upload file to appwrite storage
-          console.log(file.localFile)
+    const fileIds = await Promise.all(promises);
 
-          const uploadedFile = await uploadFile(file.localFile);
-          if (!uploadedFile) throw Error;
-          // now attach this uploaded file to post 
-          // Get file url
-          const fileUrl = getFilePreview(uploadedFile.$id);
-
-          if (!fileUrl) {
-            // if something goes wrong or corrupted then delete the media file from the storage
-            deleteFile(uploadedFile.$id);
-            throw Error;
-          }
-          fileUrls.push(fileUrl)
-          uploadedFilesIds.push(uploadedFile.$id)
-
-
-        } else { // file is already present in database
-
-          const fileUrl = getFilePreview(file.remoteFileId);
-          if (!fileUrl) {
-            // if something goes wrong or corrupted then delete the media file from the storage
-            //await deleteFile(uploadedFile.$id);
-            throw Error;
-            // check
-          }
-
-          fileUrls.push(fileUrl);
-          uploadedFilesIds.push(file.remoteFileId);
-
+    fileIds.forEach((file)=>{
+      if(file?.$id){
+      
+        const fileUrl=getFilePreview(file.$id);
+        
+        if (!fileUrl) {
+          // if something goes wrong or corrupted then delete the media file from the storage
+          deleteFile(file.$id);
+          throw Error;
         }
-      });
+        uploadedFilesIds.push(file.$id);
+        fileUrls.push(fileUrl.toString())
 
+      }
+    })
 
-    }
+    post.filesMap.forEach( (file: EditFile, key: string) => {
+      //for( let [key, file] of Object.entries(post.filesMap)){
+
+      if (!file.isLocal) { // a local file is added
+        // Upload file to appwrite storage
+
+        fileUrls.push(file.remoteFileUrl);
+        uploadedFilesIds.push(file.remoteFileId);
+
+      }
+
+    });
 
     // Convert tags into array
-    //console.log(post.tags)
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
+    
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        imageUrls: fileUrls,
+        imageIds: uploadedFilesIds,
+        location: post.location,
+        tags: tags,
+      });
 
-    console.log('uploadedFi')
-    console.log(uploadedFilesIds)
-    console.log(fileUrls)
-
-    if (fileUrls.length > 0 && uploadedFilesIds.length > 0) {
-      const updatedPost = await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.postCollectionId,
-        post.postId,
-        {
-          caption: post.caption,
-          imageUrls: fileUrls,
-          imageIds: uploadedFilesIds,
-          location: post.location,
-          tags: tags,
+    if(!updatedPost) {
+     
+      fileIds.forEach((file)=>{
+        if(file?.$id){
+           // if something goes wrong or corrupted then delete the media file from the storage
+            deleteFile(file.$id);
+           
         }
-      );
+      })
+      //await deleteFile(uploadedFile.$id);
+      //throw Error;
+    }
 
-      if (!updatedPost) {
-        // await deleteFile(post.imageId);
-        throw Error;
-      }
-      return updatedPost;
-    } else
-      throw Error;
+    return updatedPost;
 
+
+
+    
   } catch (error) {
     console.log(error);
     return null;
@@ -569,8 +553,8 @@ export async function updatePost(post: IUpdatePost) {
 }
 
 // ============================== DELETE POST
-export async function deletePost(postId: string, imageId: string) {
-  if (!postId || !imageId) return;
+export async function deletePost(postId: string, imageIds: string[]) {
+  if (!postId || !imageIds) return;
 
   try {
     const statusCode = await databases.deleteDocument(
@@ -579,9 +563,14 @@ export async function deletePost(postId: string, imageId: string) {
       postId
     );
 
-    if (!statusCode) throw Error;
+   
 
-    await deleteFile(imageId);
+    if (!statusCode) throw Error;
+    console.log("deletepost")
+    console.log(imageIds)
+    imageIds.forEach(async (imageId)=>{
+       await deleteFile(imageId);
+    })
 
     return { status: "Ok" };
   } catch (error) {

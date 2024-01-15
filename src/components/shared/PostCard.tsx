@@ -11,8 +11,7 @@ type PostCardProps = {
 };
 
 function PostCard({ post }: PostCardProps) {
-  console.log('PostCard')
-  console.log(post)
+ 
   const { user } = useUserContext();
 
   if(!user.id) return;
@@ -79,10 +78,11 @@ function PostCard({ post }: PostCardProps) {
           className="post-card_img"
           alt="post image"
               />*/}
-              <ImagesLightBox 
+             
+      </Link>
+      <ImagesLightBox 
                   imageUrls={post.imageUrls}
               />
-      </Link>
       <PostStats post={post} userId={user.id} />
     </div>
   )

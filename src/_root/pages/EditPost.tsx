@@ -23,9 +23,6 @@ function EditPost() {
       </div>
     );
   
-    console.log('Edit Post')
-  console.log(post)
-
   return (
     <div className='flex flex-1'>
       <div className="common-container">

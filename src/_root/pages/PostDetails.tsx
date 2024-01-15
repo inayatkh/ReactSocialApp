@@ -29,7 +29,8 @@ const PostDetails = () => {
   );
 
   const handleDeletePost = () => {
-    deletePost({ postId: id || '', imageId: post?.imageId });
+    console.log("handleDeletePost")
+    deletePost({ postId: id || '', imageIds: post?.imageIds });
     navigate(-1);
   };
 
@@ -61,9 +62,11 @@ const PostDetails = () => {
             alt="creator"
             className="post_details-img"
           />*/}
+          
           <ImagesLightBox 
               imageUrls={post?.imageUrls}
           />
+         
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link

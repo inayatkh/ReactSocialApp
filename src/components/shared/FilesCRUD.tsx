@@ -13,7 +13,7 @@ type FilesCRUDProps = {
 
 const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDProps) => {
   //const filesMap = new Map<string, EditFile>(); //  later to be used with fieldchange
-  const [filesMap, setFilesMap] = useState<Map<string, EditFile>>(new Map<string, EditFile>());
+  const [filesMap, setFilesMap] = useState(new Map<string, EditFile>());
 
   useEffect(() => {
     if (remoteMediaUrls) {
@@ -24,19 +24,18 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
         g.remoteFileId = remoteMediaIds[index];
 
         filesMap.set(remoteMediaUrl, g);
+        
+        
       });
     }
+    console.log(filesMap.size)
     setFilesMap(filesMap);
+    //setFilesMap(filesMap);
+    console.log("use effet setfilemaps called")
+    
   }, []); //run once on element load
 
   
-  // this has to be recheked for the case of update
-  // in case of update mediaUrls contain url of the remote data storage and
-  /// fileUrls are initialized with the medialUrl
-  /// however this result in different types of files in files and fileUrls
-  /// one way is to download the remote files and reuplaoded again
-  // https://stackoverflow.com/questions/61833074/change-the-file-after-uploading-in-react-js-reupload-files
-
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     
     if ( acceptedFiles.length ) {
@@ -48,6 +47,7 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
         filesMap.set(g.localFileURL, g);
       });
     }
+    
     setFilesMap(filesMap);
 
     
@@ -55,28 +55,37 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
 
   useEffect(() => {
     fieldChange(filesMap);
+    
+    console.log('secode use effet called')
+    console.log(filesMap.size)
   }, [filesMap]); // <- add the files are added or removed
 
   
 
   function handlerDeleteFile(e : React.MouseEvent<HTMLButtonElement, MouseEvent>, selFile: string) {
-    e.stopPropagation();
+    e.preventDefault()
     if(!filesMap.get(selFile)?.isLocal){
 
-      let remotefileId : string;
-      remotefileId = filesMap.get(selFile)?.remoteFileId;
+     
+      let remoteFileId = filesMap.get(selFile)?.remoteFileId;
       // delete remote file 
-      deleteFile(remotefileId);
+      if(remoteFileId)
+        deleteFile(remoteFileId);
       
-
+      filesMap.delete(selFile);
+      setFilesMap(filesMap);
+      return;
     }
     filesMap.delete(selFile);
     setFilesMap(filesMap);
     
     //setFiles(files);
     URL.revokeObjectURL(selFile);
-    console.log('delete exit')
-  }
+    console.log("deleleted")
+    
+  };
+
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
@@ -84,12 +93,19 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
     },
   });
 
-   console.log('filesMap.size')
-   console.log(filesMap.size)
-  return (filesMap.size > 0) ? (
+  
+ 
+
+  return filesMap.size > 0 ? (
     <>
+       <div>
+          <h1>{`A filesMap size: ${filesMap.size}`}</h1>
+      </div>
       <div className="flex flex-row flex-wrap justify-center p-5 lg:p-10">
-        {Array.from(filesMap).map(([key, value]) => {
+       
+        { 
+         Array.from(filesMap).map(([key,value])=>{
+         //filesMap.forEach((value, key) => {
             return(
               <div key={key} className="relative shadow-2xl">
                 <img
@@ -107,12 +123,12 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
                   variant={"secondary"}
                   onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handlerDeleteFile(e,key)}
                   key={`${key}-button`}
-                >
-                  X
+                >X          X
                 </Button>
               </div>
             )
-            })}
+            })
+        }
       </div>
 
       <div
@@ -123,41 +139,6 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
         <p className="file_uploader-label">Add photos</p>
       </div>
 
-      {/*
-          <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
-          <Lightbox
-               toolbar={{
-                buttons: [
-                  <button key="my-button" type="button" className="yarl__button">
-                    Button
-                  </button>,
-                  "close",
-                ],
-              }}
-              plugins={[Inline]}
-              inline={{
-                style: { width: "100%", maxWidth: "900px", aspectRatio: "3 / 2" },
-              }}
-              open={isOpenLightbox}
-              close={() => setIsOpenLightbox(false)}
-              slides={
-                file.map((item) => ({
-                  src: convertFileToUrl(item)
-                }))
-              }
-
-              
-          />
-            
-          </div>
-          
-          <div
-              {...getRootProps()}
-              className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer">
-          <input {...getInputProps()} className="cursor-pointer" />
-          <p className="file_uploader-label">Click or drag photo to replace</p>
-          </div>
-        */}
     </>
   ) : (
     <div
