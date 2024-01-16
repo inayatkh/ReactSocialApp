@@ -3,6 +3,7 @@ import { ID, Models } from "appwrite"
 import { Link } from "react-router-dom";
 import { multiFormatDateString } from "@/lib/utils";
 import PostStats from "./PostStats";
+import ImagesLightBox from "./ImagesLightBox";
 
 type PostCardProps = {
   post: Models.Document;
@@ -10,6 +11,7 @@ type PostCardProps = {
 };
 
 function PostCard({ post }: PostCardProps) {
+ 
   const { user } = useUserContext();
 
   if(!user.id) return;
@@ -60,8 +62,7 @@ function PostCard({ post }: PostCardProps) {
         <div className="small-medium lg:base-medium py-5">
           <p>{post.caption}</p>
           <ul className="flex gap-1 mt-2">
-           
-            
+                      
             { //post.tags && post.tags.map &&
               post.tags.map((tag: string) => (
                 <li key={tag} className="text-light-3">
@@ -71,13 +72,21 @@ function PostCard({ post }: PostCardProps) {
          
           </ul>
         </div>
-        <img 
+        {/*<img 
           src={post.imageUrl || '/assets/icons/profile-placeholder.svg'}
           className="post-card_img"
           alt="post image"
-        />
+              />*/}
+             
       </Link>
+      <div className="post-card_img">
+      <ImagesLightBox 
+                  imageUrls={post.imageUrls}
+              />
+      </div>
+      <div>
       <PostStats post={post} userId={user.id} />
+      </div>
     </div>
   )
 }

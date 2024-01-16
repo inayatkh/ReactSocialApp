@@ -27,7 +27,7 @@ import {
   searchPosts,
   getUserById,
   getPostLikedUsers,
- 
+
 
 } from '../appwrite/api'
 import { INewUser, INewPost, IUpdatePost, IUpdateUser } from '@/types'
@@ -88,7 +88,7 @@ export const useGetUsers = (limit?: number) => {
   });
 };
 
-export const useGetPostLikedUsers =(userIds: string | string[]) =>{
+export const useGetPostLikedUsers = (userIds: string | string[]) => {
   /// to avoid the following error
   /*
     argument of type 'string[] | undefined' is not assignable to parameter of type 'string[]'.
@@ -109,13 +109,13 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
+    mutationFn: ({
       postId,
       likesArray,
-     }: { 
+    }: {
       postId: string;
       likesArray: string[]
-     }) =>  likePost(postId, likesArray),
+    }) => likePost(postId, likesArray),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
@@ -145,7 +145,7 @@ export const useSavePost = () => {
     mutationFn: ({ postId, userId }: { postId: string; userId: string }) =>
       savePost(postId, userId),
     onSuccess: (data) => {
-      
+
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS, data?.$id]
       })
@@ -167,10 +167,10 @@ export const useDeleteSavedPost = () => {
 
   return useMutation({
     // order of the parameter must be the same to that of mutuationFn
-    mutationFn: (savedRecordId : string ) =>
+    mutationFn: (savedRecordId: string) =>
       deleteSavedPost(savedRecordId),
     onSuccess: (data) => {
-      
+
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS, data?.$id]
       })
@@ -197,7 +197,7 @@ export const useGetCurrentUser = () => {
 
 }
 
-export const useGetPostById= (postId: string) => {
+export const useGetPostById = (postId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
     queryFn: () => getPostById(postId),
@@ -222,8 +222,8 @@ export const useDeletePost = () => {
   // deleting is also a mutation not a fetch
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ postId, imageId }: { postId: string; imageId: string }) =>
-      deletePost(postId, imageId),
+    mutationFn: ({ postId, imageIds }: { postId: string; imageIds: string[] }) =>
+      deletePost(postId, imageIds),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -247,7 +247,7 @@ export const useGetUserPosts = (userId?: string) => {
 export const useGetPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts ,
+    queryFn: getInfinitePosts,
     getNextPageParam: (lastPage) => {
       // If there's no data, there are no more pages.
       if (lastPage && lastPage.documents.length === 0) {

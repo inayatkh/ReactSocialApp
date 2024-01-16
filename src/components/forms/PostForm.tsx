@@ -15,13 +15,16 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "../ui/textarea";
-import FileUploader from "../shared/FileUploader";
+
 import { PostFormValidationSchema } from "@/lib/validation";
 import { Models } from "appwrite";
 import { useCreatePost, useUpdatePost } from "@/lib/react-query/QueriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
+
+import FilesCRUD from "../shared/FilesCRUD";
+import { EditFile } from "@/lib/utils";
 
 
 type PostFormProps = {
@@ -55,7 +58,7 @@ function PostForm({ post, action }: PostFormProps) {
     resolver: zodResolver(PostFormValidationSchema),
     defaultValues: {
       caption: post ? post.caption : "",
-      file: [],
+      filesMap:  new Map<string, EditFile>(),
       location: post ? post.location : "",
       tags: post ? post.tags.join(',') : "",
 
@@ -66,15 +69,20 @@ function PostForm({ post, action }: PostFormProps) {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof PostFormValidationSchema>) {
 
-    if(post && action === 'Update'){
+    //console.log('onSubmit')
+    //console.log({...values})
+    
+   if(post && action === 'Update'){
+
+      
       const updatedPost = await updatePost({
         ...values,
         postId: post.$id,
-        imageId: post.imageId,
-        imageUrl: post.imageUrl,
+        //imageIds: post.imageIds,
+        //imageUrls: post.imageUrls,
 
       });
-
+ 
       if (!updatedPost){
         toast({
              title: 'Please try again',
@@ -82,7 +90,7 @@ function PostForm({ post, action }: PostFormProps) {
  
          return ;
      }
-      
+   
      return navigate(`/posts/${post.$id}`);
 
 
@@ -101,7 +109,8 @@ function PostForm({ post, action }: PostFormProps) {
 
         return ;
     }
-    navigate('/');
+   
+  navigate('/');
   }
   return (
     <Form {...form}>
@@ -123,17 +132,21 @@ function PostForm({ post, action }: PostFormProps) {
         />
         <FormField
           control={form.control}
-          name="file"
+          name="filesMap"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
                 
-                <FileUploader
+                {/*<FilesUploader
                     fieldChange={ field.onChange }
-                    mediaUrl={ post?.imageUrl}
+                    mediaUrls={ post?.imageUrls}
+                />*/}
+                <FilesCRUD
+                  fieldChange={ field.onChange }
+                  remoteMediaUrls={ post?.imageUrls}
+                  remoteMediaIds={ post?.imageIds}
                 />
-                
 
               </FormControl>
               

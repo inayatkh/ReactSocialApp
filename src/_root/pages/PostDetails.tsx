@@ -8,6 +8,10 @@ import { useDeletePost, useGetPostById, useGetUserPosts } from "@/lib/react-quer
 import PostStats from "@/components/shared/PostStats";
 import Loader from "@/components/shared/Loader";
 import GridPostList from "@/components/shared/GridPostList";
+import ImagesLightBox from "@/components/shared/ImagesLightBox";
+
+
+
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -25,9 +29,12 @@ const PostDetails = () => {
   );
 
   const handleDeletePost = () => {
-    deletePost({ postId: id || '', imageId: post?.imageId });
+    console.log("handleDeletePost")
+    deletePost({ postId: id || '', imageIds: post?.imageIds });
     navigate(-1);
   };
+
+  
 
   return (
     <div className="post_details-container">
@@ -50,12 +57,16 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <img
-            src={post?.imageUrl}
+          {/*<img
+            src={post?.imageUrls[0]}
             alt="creator"
             className="post_details-img"
+          />*/}
+          
+          <ImagesLightBox 
+              imageUrls={post?.imageUrls}
           />
-
+         
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link
