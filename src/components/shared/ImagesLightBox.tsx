@@ -22,7 +22,7 @@ function ImagesLightBox({imageUrls}:ImagesLightBoxProps) {
   const inline = {
     style: {
       width: "130%",
-      maxWidth: "300px",
+      maxWidth: "600px",
       aspectRatio: "3 / 2",
       margin: "0 auto",
     },
@@ -36,8 +36,8 @@ function ImagesLightBox({imageUrls}:ImagesLightBoxProps) {
   return (
     
 
-    <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
     
+    <div className="flex flex-1 justify-center w-full p-2 ">
      <Lightbox
                             
               inline={inline}
@@ -75,8 +75,10 @@ function ImagesLightBox({imageUrls}:ImagesLightBoxProps) {
               plugins={[Inline, Thumbnails]}
               
           />
+
+    </div>
       
-          </div>
+          
           
     
     
