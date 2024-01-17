@@ -123,7 +123,13 @@ const FilesCRUD = ({ fieldChange, remoteMediaUrls, remoteMediaIds }: FilesCRUDPr
                   variant={"secondary"}
                   onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handlerDeleteFile(e,key)}
                   key={`${key}-button`}
-                >X          X
+                >
+                <img
+                src={"/assets/icons/delete.svg"}
+                alt="delete"
+                width={24}
+                height={24}
+              />
                 </Button>
               </div>
             )
